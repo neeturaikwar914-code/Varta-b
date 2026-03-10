@@ -1,62 +1,62 @@
-import sqlite3
-import uuid
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# database connect
-def get_db():
-    return sqlite3.connect("varta.db")
+# Home route (backend check)
+@app.route("/")
+def home():
+    return "Varta Backend Running 🚀"
 
-# signup
-@app.route("/signup", methods=["POST"])
-def signup():
-    data = request.json
-    username = data["username"]
-    password = data["password"]
 
-    db = get_db()
-    cur = db.cursor()
-
-    try:
-        cur.execute(
-        "INSERT INTO users (username,password_hash) VALUES (?,?)",
-        (username,password))
-        db.commit()
-
-        return jsonify({"status":"account created"})
-    except:
-        return jsonify({"status":"username exists"})
-
-# login
+# Login API
 @app.route("/login", methods=["POST"])
 def login():
 
-    data = request.json
-    username = data["username"]
-    password = data["password"]
+    data = request.get_json()
 
-    db = get_db()
-    cur = db.cursor()
+    username = data.get("username")
+    password = data.get("password")
 
-    cur.execute(
-    "SELECT id FROM users WHERE username=? AND password_hash=?",
-    (username,password))
+    # demo login
+    if username == "admin" and password == "1234":
+        return jsonify({
+            "status": "success",
+            "message": "Login successful"
+        })
+    else:
+        return jsonify({
+            "status": "error",
+            "message": "Wrong username or password"
+        })
 
-    user = cur.fetchone()
 
-    if user:
+# Signup API
+@app.route("/signup", methods=["POST"])
+def signup():
 
-        token = str(uuid.uuid4())
+    data = request.get_json()
 
-        cur.execute(
-        "INSERT INTO sessions (user_id,session_token) VALUES (?,?)",
-        (user[0],token))
+    username = data.get("username")
+    password = data.get("password")
 
-        db.commit()
+    return jsonify({
+        "status": "success",
+        "message": f"User {username} created successfully"
+    })
 
-        return jsonify({"token":token})
 
-    return jsonify({"error":"invalid login"})
+# Chat test API
+@app.route("/chat", methods=["GET"])
+def chat():
 
-app.run(host="0.0.0.0", port=10000)
+    messages = [
+        {"user": "Rahul", "message": "Hello"},
+        {"user": "Aman", "message": "Hi bro"},
+        {"user": "Riya", "message": "Good morning"}
+    ]
+
+    return jsonify(messages)
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
