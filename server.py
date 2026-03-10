@@ -1,8 +1,9 @@
 from flask import Flask, request, jsonify
+import os
 
 app = Flask(__name__)
 
-# Home route (backend check)
+# Home route
 @app.route("/")
 def home():
     return "Varta Backend Running 🚀"
@@ -17,17 +18,16 @@ def login():
     username = data.get("username")
     password = data.get("password")
 
-    # demo login
     if username == "admin" and password == "1234":
         return jsonify({
             "status": "success",
             "message": "Login successful"
         })
-    else:
-        return jsonify({
-            "status": "error",
-            "message": "Wrong username or password"
-        })
+
+    return jsonify({
+        "status": "error",
+        "message": "Wrong username or password"
+    })
 
 
 # Signup API
@@ -41,22 +41,11 @@ def signup():
 
     return jsonify({
         "status": "success",
-        "message": f"User {username} created successfully"
+        "message": f"{username} created successfully"
     })
 
 
-# Chat test API
-@app.route("/chat", methods=["GET"])
-def chat():
-
-    messages = [
-        {"user": "Rahul", "message": "Hello"},
-        {"user": "Aman", "message": "Hi bro"},
-        {"user": "Riya", "message": "Good morning"}
-    ]
-
-    return jsonify(messages)
-
-
+# Important for Render
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
