@@ -1,15 +1,17 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import os
 
 app = Flask(__name__)
 
-# Home route
+# CORS allow
+CORS(app)
+
 @app.route("/")
 def home():
     return "Varta Backend Running 🚀"
 
 
-# Login API
 @app.route("/login", methods=["POST"])
 def login():
 
@@ -30,7 +32,6 @@ def login():
     })
 
 
-# Signup API
 @app.route("/signup", methods=["POST"])
 def signup():
 
@@ -45,7 +46,6 @@ def signup():
     })
 
 
-# Important for Render
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
